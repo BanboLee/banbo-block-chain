@@ -11,19 +11,21 @@
 
 /******* Http Server *******/
 #include "server.h"                 // HttpServer
+#include "chain_manager.h"          // ChainManager
 #include "demo_connector.h"         // DemoConnector
+#include "mine_connector.h"         // MineConnector
 
 #include "bbc_log.h"                // log
 
-#define ADD_CONNECTOR(conn)                                         \
+#define ADD_CONNECTOR(conn, ...)                                    \
     do {                                                            \
-        conn *c = new (std::nothrow) conn();                        \
+        conn *c = new (std::nothrow) conn(__VA_ARGS__);             \
         if (c == NULL || c->init() != 0) {                          \
-            LOG(FATAL) << "Failed to create " << #conn; \
+            LOG(FATAL) << "Failed to create " << #conn;             \
             return -1;                                              \
         }                                                           \
         if (server.connector_registor(c) != 0) {                    \
-            LOG(FATAL) << "Failed to add " << #conn;    \
+            LOG(FATAL) << "Failed to add " << #conn;                \
             return -1;                                              \
         }                                                           \
     } while (0)    
@@ -43,11 +45,16 @@ int main(int argc, char *argv[]) {
 
     bbc::init_log();
 
+    // Chain manager
+    bbc::ChainManager chain_manager;
+    chain_manager.init();
+
     // Http Server
     bbc::HttpServer server;
 
     //API
     ADD_CONNECTOR(bbc::DemoConnector);
+    ADD_CONNECTOR(bbc::MineConnector, &chain_manager);
 
     if (server.start(g_signal_quit) != 0) {
         LOG(FATAL) << "Fail to start http server.";

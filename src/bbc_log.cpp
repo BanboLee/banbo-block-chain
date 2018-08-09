@@ -13,11 +13,11 @@ namespace bbc {
 void init_log() {
     FLAGS_log_dir = "./log";
     google::InitGoogleLogging("block-chain");
-    google::SetLogDestination(FATAL, "./log/bcc.chainer.log.wf");
-    google::SetLogDestination(ERROR, "./log/bcc.chainer.log.wf");
-    google::SetLogDestination(WARNING, "./log/bcc.chainer.log.wf");
+    google::SetLogDestination(FATAL, "./log/bbc.chainer.log.wf");
+    google::SetLogDestination(ERROR, "./log/bbc.chainer.log.wf");
+    google::SetLogDestination(WARNING, "./log/bbc.chainer.log.wf");
 
-    google::SetLogDestination(INFO, "./log/bcc.chainer.log.info");
+    google::SetLogDestination(INFO, "./log/bbc.chainer.log.info");
 }
 
 void close_log() {

@@ -6,16 +6,16 @@
  * Brief:
  ********************************************/
 
-#include "demo_connector.h"
-#include <iostream>            // cout
 #include <string>
+
+#include "demo_connector.h"
+#include "common_utils.h"
 
 namespace bbc {
 
-int DemoConnector::run(Connection *conn, Request *request) {
+int DemoConnector::get(Connection *conn, Request *request) {
     std::string hw = "hello world!";
-    mg_send_head(conn, HTTP_STATUS_OK,  hw.size(), "Content-Type: text/plain");
-    mg_send(conn, hw.c_str(), hw.size());
+    reply_text(conn, hw);
     return 0;
 }
 

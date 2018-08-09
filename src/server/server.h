@@ -18,11 +18,8 @@ namespace bbc {
     typedef std::map<std::string, Connector*> Url2Connector;
     static Url2Connector _connectors;
     
-    enum HttpStatusCode {
-        HTTP_STATUS_OK = 200,
-        HTTP_STATUS_URI_NOT_FOUND = 404
-    };
-
+    static const std::string HTTP_METHOD_GET = "GET";
+    static const std::string HTTP_METHOD_POST = "POST";
     static const std::string DEFAULT_PORT = "8080";
     class HttpServer {
     public:
@@ -33,7 +30,7 @@ namespace bbc {
         int start(bool &g_signal_quit);
         static void ev_handler(Connection *c, int ev, void *p);
         int connector_registor(Connector *connector);
-        int reply_text(Connection *conn, std::string &response);
+
     private:
         const std::string _port;
     };

@@ -14,7 +14,7 @@ namespace bbc {
     class DemoConnector : public Connector {
     public:
         const char* uri() const { return "/banbo/demo"; }
-        int run(Connection *conn, Request *request);
+        int get(Connection *conn, Request *request);
     };
 }
 

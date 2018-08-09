@@ -1,7 +1,14 @@
-#include <iostream>            // cout
+/********************************************
+ * Author: banbo <banbo777@163.com>
+ * File: server.cpp
+ * Date: 2018-07-19
+ * Version: 1.0.0.0
+ * Brief:
+ ********************************************/
 
 #include "bbc_log.h"
 #include "server.h"
+#include <iostream>
 
 namespace bbc {
 
@@ -9,28 +16,24 @@ void HttpServer::ev_handler(Connection *c, int ev, void *p) {
     if (ev == MG_EV_HTTP_REQUEST) {
         Request *hm = (Request *) p;
         std::string uri(hm->uri.p, hm->uri.len);
+        std::string method(hm->method.p, hm->method.len);
         LOG(INFO) << "uri: " << uri;
+        LOG(INFO) << "method: " << method;
         std::map<std::string, Connector*>::iterator it = bbc::_connectors.find(uri);
         if (it != bbc::_connectors.end()) {
             Connector *connector = it->second;
-            connector->run(c, hm);
+            if (method == HTTP_METHOD_GET) {
+                connector->get(c, hm);
+            } else {
+                connector->post(c, hm); 
+            }
         } else {
-            std::string s = "Page Not Found";
-            mg_send_head(c, HTTP_STATUS_URI_NOT_FOUND,  s.size(),"Content-Type: text/plain");
-            mg_send(c, s.c_str(), s.size());
+            reply_404(c);
         }
     }
 }
 
 int HttpServer::start(bool &g_signal_quit) {
-    /* for debug
-    LOG(INFO) << "=====================";
-    for (std::map<std::string, Connector*>::iterator it = bbc::_connectors.begin(); it != bbc::_connectors.end(); it++) {
-        LOG(INFO) << it->first;
-    }
-    LOG(INFO) << "=====================";
-    */
-
     struct mg_mgr mgr;
     struct mg_connection *c;
     mg_mgr_init(&mgr, NULL);
@@ -46,14 +49,8 @@ int HttpServer::start(bool &g_signal_quit) {
 }
 
 int HttpServer::connector_registor(Connector *connector) {
+    LOG(INFO) << "Add connector for : " << connector->uri();
     _connectors[connector->uri()] = connector;
-    return 0;
-}
-
-// Reply text response.
-int HttpServer::reply_text(Connection *conn, std::string &response) {
-    mg_send_head(conn, HTTP_STATUS_OK,  response.size(), "Content-Type: text/plain");
-    mg_send(conn, response.c_str(), response.size());
     return 0;
 }
 
